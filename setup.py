@@ -5,14 +5,15 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="music_metadata_territories",
-    version="19a1.dev4",
+    version="19a1.dev5",
     author="Matija Kolarić",
     author_email="matijakolaric@users.noreply.github.com",
     description="Music Metedata - Territory-related tools",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/musicmetadata/territories",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_namespace_packages(include=['music_metadata.*']),
+    namespace_packages=['music_metadata'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
