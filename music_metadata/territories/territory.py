@@ -198,28 +198,36 @@ def import_structure():
                 world = False
 
             if level == '1':
-                stack = []  # Reset the stack
-                # Included through World
+                stack = []
+
                 if not world and typ == 'GEOGRAPHICAL COUNTRY-GROUP':
+                    # Included through World, so ignore here
                     continue
             elif stack == []:  # And the children
                 continue
-            elif not world and typ != 'COUNTRY': # Only Worldtree allowed
+            elif not world and typ != 'COUNTRY':
+                # Only World-tree allowed, no e.g. Commonwealth-tree
                 continue
 
-
             if stack and world:
+
+                # if this is a new branch, remove the garbage from the stack
                 while stack[-1][0] >= level:
                     stack.pop(-1)
+
                 parent = stack[-1][1]
                 territory.parent = parent
+
             elif stack:
                 stack = [stack[0]]
                 parent = stack[0][1]
+
             else:
                 parent = None
 
             if parent:
+
+                # not just for the World-tree
                 parent.children.add(territory)
 
             stack.append((level, territory))
