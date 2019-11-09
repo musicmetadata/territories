@@ -4,6 +4,9 @@ from music_metadata.territories import Territory
 class TestTerritory(unittest.TestCase):
 
     def test_relations(self):
+        """
+        Test basic relations between hand-picked objects.
+        """
         world = Territory.get('2136')
         self.assertEqual(str(world).upper(), 'WORLD')
         self.assertEqual(len(world.children), 5)

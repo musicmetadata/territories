@@ -1,3 +1,16 @@
+"""
+CISAC formats, including CWR, use hierarchies of territories.
+See included CSV files for details.
+
+They are then combined in different expressions, e.g.
+
+* including World excluding Balkans including Croatia
+* including US including Canada
+
+This should make things a bit simpler.
+
+"""
+
 from datetime import datetime
 import csv
 import os
@@ -12,12 +25,29 @@ TERRITORY_TREE_FILE = 'tree.csv'
 
 
 class Territory(object):
+    """
+    Territory class contains CISAC TIS territories and their relations.
+
+    Please note that variable names correspond to TIS, not the usual ones.
+    """
 
     all_tis_n = collections.OrderedDict()
     all_tis_a = collections.OrderedDict()
     all_tis_a_ext = collections.OrderedDict()
 
-    def __init__(self, tis_n, tis_a, tis_a_ext, name, official_name, abbreviated_name, typ):
+    def __init__(self, tis_n, tis_a, tis_a_ext, name, official_name,
+             abbreviated_name, typ):
+        """
+
+        Args:
+            tis_n (str): Numeric code, e.g. 2136 for World, 840 for USA
+            tis_a (str): 2 char ISO country codes plus extras, e.g. US, 2WL
+            tis_a_ext (str): 2 char ISO country codes, e.g. USA
+            name (str): Normal name
+            official_name (str): A bit longer name
+            abbreviated_name (str): A shorter name
+            typ (str): e.g. COUNTRY, GEOGRAPHICAL COUNTRY-GROUP
+        """
         self.tis_n = tis_n
         self.tis_a = tis_a
         self.tis_a_ext = tis_a_ext
@@ -36,10 +66,20 @@ class Territory(object):
         return self.name
 
     def __repr__(self):
-        return self.name
+        return f'Territory: {self.name} ({self.type})'
 
     @classmethod
     def get(cls, key, key_type='tis_n'):
+        """
+        Get the territory by one of the keys.
+
+        Args:
+            key (str): key value
+            key_type (str): key type, default is TIS-N
+
+        Returns:
+            Territory
+        """
         if not isinstance(key, str):
             raise AttributeError('key must be of type str')
         if key_type == 'tis_n':
@@ -48,6 +88,17 @@ class Territory(object):
         raise AttributeError('Key {key_type} not allowed.')
 
     def get_descendants(self, only_countries=False):
+        """
+        Return all descendants, or all containing countries.
+
+        Args:
+            only_countries (bool): Choose if you want only countries to be
+            included.
+
+        Returns:
+            list of Territory objects
+
+        """
         for child in self.children:
             if child.children:
                 if not only_countries:
@@ -58,14 +109,31 @@ class Territory(object):
 
     @property
     def descendants(self):
+        """
+        Return all included territories.
+
+        Returns:
+            list of Territory objects
+        """
         yield from self.get_descendants()
 
     @property
     def countries(self):
+        """
+        Return all included countries.
+
+        Returns:
+            list of Territory objects
+        """
         yield from self.get_descendants(only_countries=True)
 
 
 def import_territories():
+    """
+    Import territories from a CSV file.
+    """
+
+
     now = datetime.now()
     with open(
             os.path.join(
@@ -94,6 +162,15 @@ def import_territories():
 
 
 def import_structure():
+    """
+    Import the territory structure.
+
+    This import is partial, as it allows only the world tree, and what it
+    includes.
+    Other trees, e.g. Commonwealth, are ignored, all contained countries are
+    listed.
+    """
+
     now = datetime.now()
     stack = []
     with open(
