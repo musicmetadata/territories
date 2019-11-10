@@ -68,6 +68,22 @@ class Territory(object):
     def __repr__(self):
         return f'Territory: {self.name} ({self.type})'
 
+    @property
+    def is_world(self):
+        return self.tis_n == '2136'
+
+    @property
+    def in_world_tree(self):
+        return self.is_world or self.parent
+
+    @property
+    def is_group(self):
+        return bool(self.children)
+
+    @property
+    def is_country(self):
+        return not self.is_group
+
     @classmethod
     def get(cls, key, key_type='tis_n'):
         """
@@ -100,10 +116,10 @@ class Territory(object):
 
         """
         for child in self.children:
-            if child.children:
+            if child.is_group:
                 if not only_countries:
                     yield child
-                yield from child.descendants
+                yield from child.get_descendants(only_countries=only_countries)
             else:
                 yield child
 
@@ -126,6 +142,15 @@ class Territory(object):
             list of Territory objects
         """
         yield from self.get_descendants(only_countries=True)
+
+    def get_ascendants(self):
+        if self.parent:
+            yield self.parent
+            yield from self.parent.get_ascendants()
+
+    @property
+    def ascendants(self):
+        yield from self.get_ascendants()
 
 
 def import_territories():
@@ -192,7 +217,7 @@ def import_structure():
             territory = Territory.get(tis_n)
 
             # World section is special
-            if tis_n == '2136':
+            if territory.is_world:
                 world = True
             elif level == '1':
                 world = False
@@ -200,11 +225,14 @@ def import_structure():
             if level == '1':
                 stack = []
 
+                # Note that Territory.in_world_tree can not be used yet!
                 if not world and typ == 'GEOGRAPHICAL COUNTRY-GROUP':
                     # Included through World, so ignore here
                     continue
             elif stack == []:  # And the children
                 continue
+
+            # Note that Territory.in_world_tree can not be used yet!
             elif not world and typ != 'COUNTRY':
                 # Only World-tree allowed, no e.g. Commonwealth-tree
                 continue
@@ -216,6 +244,7 @@ def import_structure():
                     stack.pop(-1)
 
                 parent = stack[-1][1]
+                assert(territory.parent is None)
                 territory.parent = parent
 
             elif stack:

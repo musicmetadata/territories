@@ -1,5 +1,5 @@
 import unittest
-from music_metadata.territories import Territory
+from music_metadata.territories import Territory, TerritoryList
 
 class TestTerritory(unittest.TestCase):
 
@@ -7,8 +7,19 @@ class TestTerritory(unittest.TestCase):
         """
         Test basic relations between hand-picked objects.
         """
+
+        with self.assertRaises(AttributeError):
+            Territory.get(2136)
+
+        with self.assertRaises(AttributeError):
+            Territory.get('2136', 'nonsense')
+
         world = Territory.get('2136')
-        self.assertEqual(str(world).upper(), 'WORLD')
+        self.assertEqual(str(world), 'WORLD')
+        self.assertEqual(
+            repr(world), 'Territory: WORLD (GEOGRAPHICAL COUNTRY-GROUP)')
+
+
         self.assertEqual(len(world.children), 5)
         self.assertIsNone(world.parent)
 
@@ -33,3 +44,58 @@ class TestTerritory(unittest.TestCase):
             self.assertIn(c, world.countries)
 
 
+class TestTerritoryList(unittest.TestCase):
+
+    def test_world(self):
+        """
+        Test basic includes/excludes
+        """
+
+        world = Territory.get('2136')
+        croatia = Territory.get('191')
+        slovenia = Territory.get('705')
+        europe = Territory.get('2120')
+        cat = Territory.get('2115')
+
+        territory_list = TerritoryList()
+        territory_list.include(world)
+        territory_list.exclude(croatia)
+        self.assertIn(slovenia, territory_list.countries)
+        self.assertIn(slovenia, territory_list.keys())
+
+        territory_list = TerritoryList()
+        territory_list.include(world)
+        with self.assertRaises(ValueError):
+            territory_list.include(croatia)
+
+        territory_list = TerritoryList()
+        territory_list.include(world)
+        with self.assertRaises(ValueError):
+            territory_list.include(europe)
+
+        territory_list = TerritoryList()
+        territory_list.include(world)
+        with self.assertRaises(ValueError):
+            territory_list.include(cat)
+
+
+        territory_list = TerritoryList()
+        territory_list.include(world, '50%')
+        territory_list.exclude(europe)
+        territory_list.include(croatia, '25%')
+        self.assertIn('25%', territory_list.values())
+        self.assertIn((croatia, '25%'), territory_list.items())
+        self.assertEqual(len(territory_list), 5)
+
+        with self.assertRaises(ValueError):
+            territory_list.include(croatia)
+
+        self.assertNotIn(slovenia, territory_list.countries)
+        with self.assertRaises(ValueError):
+            territory_list.exclude(slovenia)
+
+        territory_list = TerritoryList()
+        territory_list.include(world)
+        territory_list.exclude(cat)
+        self.assertGreater(len(territory_list.countries), 100)
+        self.assertIn(slovenia, territory_list.countries)
