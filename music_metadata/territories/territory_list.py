@@ -8,23 +8,8 @@ import collections
 from .territory import Territory
 
 
-class TerritoryList(object):
+class TerritoryList(collections.OrderedDict):
 
-    def __init__(self):
-        self.included_territories = collections.OrderedDict()
-
-    def keys(self):
-        return self.included_territories.keys()
-
-    def values(self):
-        return self.included_territories.values()
-
-    def items(self):
-        return self.included_territories.items()
-
-
-    def __len__(self):
-        return len(self.included_territories)
 
     def include(self, territory, obj=None):
         """
@@ -41,14 +26,14 @@ class TerritoryList(object):
             for t in territory.children:
                 self.include(t, obj)
 
-        if territory in self.included_territories:
+        if territory in self:
             raise ValueError(f'Territory {territory} is already directly included.')
 
-        for t in self.included_territories:
+        for t in self:
             if territory in t.descendants:
                 raise ValueError(
                     f'Territory {territory} is already included through {t}.')
-        self.included_territories[territory] = obj
+        self[territory] = obj
 
     def exclude(self, territory):
         """
@@ -62,8 +47,8 @@ class TerritoryList(object):
         """
 
         # Let's try the trivial version
-        if territory in self.included_territories:
-            del self.included_territories[territory]
+        if territory in self:
+            del self[territory]
             return
 
         # If it is some non-world-tree group, we must exclude each country
@@ -76,7 +61,7 @@ class TerritoryList(object):
         stack = []
         for t in territory.ascendants:
             stack.append(t)
-            if t in self.included_territories:
+            if t in self:
                 break
         else:
             raise ValueError(
@@ -86,8 +71,8 @@ class TerritoryList(object):
         # we remove the top level and add everything below the stack element,
         # except elements in stack andthe removed territoru
         top_level = stack[-1]
-        obj = self.included_territories[top_level]
-        del self.included_territories[top_level]
+        obj = self[top_level]
+        del self[top_level]
         for parent in reversed(stack):
             for t in parent.children:
                 if t not in stack and t != territory:
@@ -96,7 +81,7 @@ class TerritoryList(object):
     @property
     def countries(self):
         countries = collections.OrderedDict()
-        for territory, obj in self.included_territories.items():
+        for territory, obj in self.items():
             if territory.is_country:
                 countries[territory] = obj
             else:
