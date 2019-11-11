@@ -33,7 +33,6 @@ class Territory(object):
 
     all_tis_n = collections.OrderedDict()
     all_tis_a = collections.OrderedDict()
-    all_tis_a_ext = collections.OrderedDict()
 
     def __init__(self, tis_n, tis_a, tis_a_ext, name, official_name,
              abbreviated_name, typ):
@@ -60,7 +59,7 @@ class Territory(object):
 
         self.__class__.all_tis_n[self.tis_n] = self
         self.__class__.all_tis_a[self.tis_a] = self
-        self.__class__.all_tis_a_ext[self.tis_a_ext] = self
+        self.__class__.all_tis_a[self.tis_a_ext] = self
 
     def __str__(self):
         return self.name
@@ -85,23 +84,23 @@ class Territory(object):
         return not self.is_group
 
     @classmethod
-    def get(cls, key, key_type='tis_n'):
+    def get(cls, key):
         """
         Get the territory by one of the keys.
 
         Args:
             key (str): key value
-            key_type (str): key type, default is TIS-N
 
         Returns:
             Territory
         """
         if not isinstance(key, str):
             raise AttributeError('key must be of type str')
-        if key_type == 'tis_n':
+        if key.isnumeric():
             key = key.lstrip('0')
             return cls.all_tis_n.get(key)
-        raise AttributeError('Key {key_type} not allowed.')
+        else:
+            return cls.all_tis_a.get(key)
 
     def get_descendants(self, only_countries=False):
         """

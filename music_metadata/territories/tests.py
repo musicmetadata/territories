@@ -11,9 +11,6 @@ class TestTerritory(unittest.TestCase):
         with self.assertRaises(AttributeError):
             Territory.get(2136)
 
-        with self.assertRaises(AttributeError):
-            Territory.get('2136', 'nonsense')
-
         world = Territory.get('2136')
         self.assertEqual(str(world), 'WORLD')
         self.assertEqual(
@@ -28,7 +25,7 @@ class TestTerritory(unittest.TestCase):
         self.assertIn(europe, world.descendants)
         self.assertNotIn(europe, world.countries)
 
-        croatia = Territory.get('191')
+        croatia = Territory.get('HR')
         self.assertNotIn(croatia, europe.children)
         self.assertIn(croatia, europe.descendants)
         self.assertIn(croatia, europe.countries)
@@ -52,7 +49,7 @@ class TestTerritoryList(unittest.TestCase):
         """
 
         world = Territory.get('2136')
-        croatia = Territory.get('191')
+        croatia = Territory.get('HR')
         slovenia = Territory.get('705')
         europe = Territory.get('2120')
         cat = Territory.get('2115')
