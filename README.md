@@ -1,6 +1,8 @@
 # Music Metadata - Territories
 
 [![Build Status](https://travis-ci.com/musicmetadata/territories.svg?branch=master)](https://travis-ci.com/musicmetadata/territories)
+[![Coverage Status](https://coveralls.io/repos/github/musicmetadata/territories/badge.svg?branch=master)](https://coveralls.io/github/musicmetadata/territories?branch=master)
+![GitHub](https://img.shields.io/github/license/musicmetadata/territories)
 
 A very simple library for dealing with territory hierarchies used in music 
 metadata, currently primarily focused on CISAC TIS.
