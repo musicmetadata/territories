@@ -1,5 +1,7 @@
 # Music Metadata - Territories
 
+[![Build Status](https://travis-ci.com/musicmetadata/territories.svg?branch=master)](https://travis-ci.com/musicmetadata/territories)
+
 A very simple library for dealing with territory hierarchies used in music 
 metadata, currently primarily focused on CISAC TIS.
 
