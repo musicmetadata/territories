@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="music_metadata_territories",
-    version="19a1",
+    version="19a2",
     author="Matija Kolarić",
     author_email="matijakolaric@users.noreply.github.com",
     description="Music Metedata - Territory-related tools",
@@ -14,6 +14,9 @@ setuptools.setup(
     url="https://github.com/musicmetadata/territories",
     packages=setuptools.find_namespace_packages(include=['music_metadata.*']),
     namespace_packages=['music_metadata'],
+    package_data={
+        '': ['*.csv'],
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

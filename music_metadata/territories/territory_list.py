@@ -4,12 +4,12 @@ CISAC formats, including CWR, use hierarchies of territories.
 The functionality coded here makes the inclusions/exclusions simpler.
 
 """
+
 import collections
 from .territory import Territory
 
 
 class TerritoryList(collections.OrderedDict):
-
 
     def include(self, territory, obj=None):
         """
@@ -69,7 +69,7 @@ class TerritoryList(collections.OrderedDict):
                 'so can not be excluded.')
 
         # we remove the top level and add everything below the stack element,
-        # except elements in stack andthe removed territoru
+        # except elements in stack an dthe removed territory
         top_level = stack[-1]
         obj = self[top_level]
         del self[top_level]
@@ -88,6 +88,3 @@ class TerritoryList(collections.OrderedDict):
                 for country in territory.countries:
                     countries[country] = obj
         return countries
-
-
-
