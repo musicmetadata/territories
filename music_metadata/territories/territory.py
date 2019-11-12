@@ -100,7 +100,7 @@ class Territory(object):
             key = key.lstrip('0')
             return cls.all_tis_n.get(key)
         else:
-            return cls.all_tis_a.get(key)
+            return cls.all_tis_a.get(key.upper())
 
     def get_descendants(self, only_countries=False):
         """
