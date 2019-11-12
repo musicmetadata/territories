@@ -25,9 +25,8 @@ countries:
 ```python
 from music_metadata.territories import *
 
-# 
 world = Territory.get('2136')
-croatia = Territory.get('191')
+croatia = Territory.get('HR')
 
 l = TerritoryList()
 l.include(world)
