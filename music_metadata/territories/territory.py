@@ -34,8 +34,9 @@ class Territory(object):
     all_tis_n = collections.OrderedDict()
     all_tis_a = collections.OrderedDict()
 
-    def __init__(self, tis_n, tis_a, tis_a_ext, name, official_name,
-             abbreviated_name, typ):
+    def __init__(
+            self, tis_n, tis_a, tis_a_ext, name, official_name,
+            abbreviated_name, typ):
         """
 
         Args:
@@ -157,7 +158,6 @@ def import_territories():
     Import territories from a CSV file.
     """
 
-
     now = datetime.now()
     with open(
             os.path.join(
@@ -171,7 +171,6 @@ def import_territories():
             (tis_n, exists_from, exists_until, typ, __, tis_a, tis_a_ext,
              name_from, name_until, name, official_name, abbreviated_name,
              __) = row
-
 
             frm = datetime.strptime(exists_from, '%d.%m.%Y')
             until = datetime.strptime(exists_until, '%d.%m.%Y')
@@ -236,7 +235,7 @@ def import_world_tree():
 
             stack.append((level, territory))
 
-            
+
 def import_other_structure():
     """
     Import the territory structure.

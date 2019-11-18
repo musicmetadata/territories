@@ -6,7 +6,6 @@ The functionality coded here makes the inclusions/exclusions simpler.
 """
 
 import collections
-from .territory import Territory
 
 
 class TerritoryList(collections.OrderedDict):

@@ -1,6 +1,7 @@
 import unittest
 from music_metadata.territories import Territory, TerritoryList
 
+
 class TestTerritory(unittest.TestCase):
 
     def test_relations(self):
@@ -15,8 +16,6 @@ class TestTerritory(unittest.TestCase):
         self.assertEqual(str(world), 'WORLD')
         self.assertEqual(
             repr(world), 'Territory: WORLD (GEOGRAPHICAL COUNTRY-GROUP)')
-
-
         self.assertEqual(len(world.children), 5)
         self.assertIsNone(world.parent)
 
@@ -65,7 +64,7 @@ class TestTerritoryList(unittest.TestCase):
         territory_list.include(balkans)
         self.assertIn(slovenia, territory_list.countries)
         self.assertIn(slovenia, territory_list.keys())
-        
+
         territory_list = TerritoryList()
         territory_list.include(world)
         territory_list.exclude(balkans)
@@ -86,7 +85,6 @@ class TestTerritoryList(unittest.TestCase):
         territory_list.include(world)
         with self.assertRaises(ValueError):
             territory_list.include(cat)
-
 
         territory_list = TerritoryList()
         territory_list.include(world, '50%')
