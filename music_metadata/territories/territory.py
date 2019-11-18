@@ -282,9 +282,9 @@ def import_other_structure():
                     stack.pop(-1)
 
             if typ != 'COUNTRY':
-                stack.append((territory, level))
+                stack.append((level, territory))
             else:
-                for t, l in stack:
+                for l, t in stack:
                     t.children.add(territory)
 
 

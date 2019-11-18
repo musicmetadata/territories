@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="music_metadata_territories",
-    version="19b3",
+    version="19rc1",
     author="Matija Kolarić",
     author_email="matijakolaric@users.noreply.github.com",
     description="Music Metedata - Territory-related tools",
