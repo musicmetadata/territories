@@ -62,11 +62,15 @@ class TestTerritoryList(unittest.TestCase):
         self.assertIn(slovenia, territory_list.keys())
 
         territory_list = TerritoryList()
+        territory_list.include(balkans)
+        self.assertIn(slovenia, territory_list.countries)
+        self.assertIn(slovenia, territory_list.keys())
+        
+        territory_list = TerritoryList()
         territory_list.include(world)
         territory_list.exclude(balkans)
         self.assertNotIn(slovenia, territory_list.countries)
         self.assertNotIn(slovenia, territory_list.keys())
-
 
         territory_list = TerritoryList()
         territory_list.include(world)
