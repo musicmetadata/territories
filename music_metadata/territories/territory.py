@@ -277,6 +277,10 @@ def import_other_structure():
             if world:
                 continue
 
+            if stack:
+                while stack[-1][0] >= level:
+                    stack.pop(-1)
+
             if typ != 'COUNTRY':
                 stack.append((territory, level))
             else:
