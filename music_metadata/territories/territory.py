@@ -185,14 +185,63 @@ def import_territories():
                 typ)
 
 
-def import_structure():
+def import_world_tree():
     """
-    Import the territory structure.
+    Import the territory structure, world-tree only.
 
     This import is partial, as it allows only the world tree, and what it
     includes.
-    Other trees, e.g. Commonwealth, are ignored, all contained countries are
-    listed.
+    """
+
+    now = datetime.now()
+    stack = []
+    with open(
+            os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                TERRITORY_TREE_FILE
+            )) as list_file:
+        reader = csv.reader(list_file)
+        next(reader)
+        world = False
+        for row in reader:
+            level, tis_n, __, __, typ, __, __, frm, till, __ = row
+
+            frm = datetime.strptime(frm, '%d.%m.%Y') if frm else None
+            till = datetime.strptime(till, '%d.%m.%Y') if till else None
+            if frm and till and not frm <= now <= till:
+                continue
+
+            territory = Territory.get(tis_n)
+
+            # World section is special
+            if territory.is_world:
+                world = True
+                stack = []
+            elif level == '1':
+                world = False
+
+            if not world:
+                continue
+
+            if stack:
+
+                # if this is a new branch, remove the garbage from the stack
+                while stack[-1][0] >= level:
+                    stack.pop(-1)
+
+                parent = stack[-1][1]
+                assert(territory.parent is None)
+                territory.parent = parent
+                parent.children.add(territory)
+
+            stack.append((level, territory))
+
+            
+def import_other_structure():
+    """
+    Import the territory structure.
+
+    This is the second part of the import, where everything in the world-tree is ignored.
     """
 
     now = datetime.now()
@@ -221,45 +270,19 @@ def import_structure():
             elif level == '1':
                 world = False
 
+            if world or territory.parent:
+                continue
+                
             if level == '1':
-                stack = []
-
-                # Note that Territory.in_world_tree can not be used yet!
-                if not world and typ == 'GEOGRAPHICAL COUNTRY-GROUP':
-                    # Included through World, so ignore here
-                    continue
-            elif stack == []:  # And the children
+                parent = territory
                 continue
 
-            # Note that Territory.in_world_tree can not be used yet!
-            elif not world and typ != 'COUNTRY':
-                # Only World-tree allowed, no e.g. Commonwealth-tree
+            elif typ != 'COUNTRY':
                 continue
-
-            if stack and world:
-
-                # if this is a new branch, remove the garbage from the stack
-                while stack[-1][0] >= level:
-                    stack.pop(-1)
-
-                parent = stack[-1][1]
-                assert(territory.parent is None)
-                territory.parent = parent
-
-            elif stack:
-                stack = [stack[0]]
-                parent = stack[0][1]
-
-            else:
-                parent = None
-
-            if parent:
-
-                # not just for the World-tree
-                parent.children.add(territory)
-
-            stack.append((level, territory))
+                
+            parent.children.add(territory)
 
 
 import_territories()
-import_structure()
+import_world_tree()
+import_other_structure()
