@@ -49,6 +49,7 @@ class TestTerritoryList(unittest.TestCase):
         """
 
         world = Territory.get('2136')
+        balkans = Territory.get('2108')
         croatia = Territory.get('HR')
         slovenia = Territory.get('705')
         europe = Territory.get('2120')
@@ -59,6 +60,13 @@ class TestTerritoryList(unittest.TestCase):
         territory_list.exclude(croatia)
         self.assertIn(slovenia, territory_list.countries)
         self.assertIn(slovenia, territory_list.keys())
+
+        territory_list = TerritoryList()
+        territory_list.include(world)
+        territory_list.exclude(balkans)
+        self.assertNotIn(slovenia, territory_list.countries)
+        self.assertNotIn(slovenia, territory_list.keys())
+
 
         territory_list = TerritoryList()
         territory_list.include(world)
