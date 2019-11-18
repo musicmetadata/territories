@@ -270,7 +270,7 @@ def import_other_structure():
             elif level == '1':
                 world = False
 
-            if world or territory.parent:
+            if world:
                 continue
                 
             if level == '1':
