@@ -264,19 +264,13 @@ def import_other_structure():
 
             territory = Territory.get(tis_n)
 
-            # World section is special
-            if territory.is_world:
+            if territory.is_world or territory.parent:
                 world = True
+                continue
             elif level == '1':
                 world = False
-
-            if world:
-                continue
-                
-            if level == '1':
                 parent = territory
                 continue
-
             elif typ != 'COUNTRY':
                 continue
                 
