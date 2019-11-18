@@ -195,6 +195,7 @@ def import_world_tree():
 
     now = datetime.now()
     stack = []
+    world = False
     with open(
             os.path.join(
                 os.path.dirname(os.path.realpath(__file__)),
@@ -202,7 +203,6 @@ def import_world_tree():
             )) as list_file:
         reader = csv.reader(list_file)
         next(reader)
-        world = False
         for row in reader:
             level, tis_n, __, __, typ, __, __, frm, till, __ = row
 
@@ -246,6 +246,7 @@ def import_other_structure():
 
     now = datetime.now()
     stack = []
+    world = False
     with open(
             os.path.join(
                 os.path.dirname(os.path.realpath(__file__)),
@@ -253,7 +254,6 @@ def import_other_structure():
             )) as list_file:
         reader = csv.reader(list_file)
         next(reader)
-        world = False
         for row in reader:
             level, tis_n, __, __, typ, __, __, frm, till, __ = row
 
@@ -264,17 +264,24 @@ def import_other_structure():
 
             territory = Territory.get(tis_n)
 
-            if territory.is_world or territory.parent:
+            if territory.is_world:
                 world = True
+                stack = []
                 continue
             elif level == '1':
                 world = False
-                parent = territory
+                stack = []
+            elif territory.parent and typ != 'COUNTRY':
+                world = True
+
+            if world:
                 continue
-            elif typ != 'COUNTRY':
-                continue
-                
-            parent.children.add(territory)
+
+            if typ != 'COUNTRY':
+                stack.append((territory, level))
+            else:
+                for t, l in stack:
+                    t.children.add(territory)
 
 
 import_territories()
