@@ -25,6 +25,7 @@ class TerritoryList(collections.OrderedDict):
             # This is some group not in the world tree:
             for t in territory.children:
                 self.include(t, obj)
+            return
 
         if territory in self:
             raise ValueError(f'Territory {territory} is already directly included.')
@@ -69,7 +70,7 @@ class TerritoryList(collections.OrderedDict):
                 'so can not be excluded.')
 
         # we remove the top level and add everything below the stack element,
-        # except elements in stack an dthe removed territory
+        # except elements in stack and the removed territory
         top_level = stack[-1]
         obj = self[top_level]
         del self[top_level]
