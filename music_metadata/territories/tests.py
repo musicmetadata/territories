@@ -1,5 +1,6 @@
 import unittest
-from music_metadata.territories import Territory, TerritoryList
+from music_metadata.territories.territory import Territory
+from music_metadata.territories.territory_list import TerritoryList
 
 
 class TestTerritory(unittest.TestCase):

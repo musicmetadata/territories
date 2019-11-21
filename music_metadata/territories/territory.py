@@ -235,6 +235,43 @@ def import_world_tree():
 
             stack.append((level, territory))
 
+def process_reader(reader):
+    now = datetime.now()
+    stack = []
+    world = False
+    for row in reader:
+        level, tis_n, __, __, typ, __, __, frm, till, __ = row
+
+        frm = datetime.strptime(frm, '%d.%m.%Y') if frm else None
+        till = datetime.strptime(till, '%d.%m.%Y') if till else None
+        if frm and till and not frm <= now <= till:
+            continue
+
+        territory = Territory.get(tis_n)
+
+        if territory.is_world:
+            world = True
+            stack = []
+            continue
+        elif level == '1':
+            world = False
+            stack = []
+        elif territory.parent and typ != 'COUNTRY':
+            world = True
+
+        if world:
+            continue
+
+        if stack:
+            while stack[-1][0] >= level:
+                stack.pop(-1)
+
+        if typ != 'COUNTRY':
+            stack.append((level, territory))
+        else:
+            for l, t in stack:
+                t.children.add(territory)
+
 
 def import_other_structure():
     """
@@ -243,9 +280,6 @@ def import_other_structure():
     This is the second part of the import, where everything in the world-tree is ignored.
     """
 
-    now = datetime.now()
-    stack = []
-    world = False
     with open(
             os.path.join(
                 os.path.dirname(os.path.realpath(__file__)),
@@ -253,38 +287,7 @@ def import_other_structure():
             )) as list_file:
         reader = csv.reader(list_file)
         next(reader)
-        for row in reader:
-            level, tis_n, __, __, typ, __, __, frm, till, __ = row
-
-            frm = datetime.strptime(frm, '%d.%m.%Y') if frm else None
-            till = datetime.strptime(till, '%d.%m.%Y') if till else None
-            if frm and till and not frm <= now <= till:
-                continue
-
-            territory = Territory.get(tis_n)
-
-            if territory.is_world:
-                world = True
-                stack = []
-                continue
-            elif level == '1':
-                world = False
-                stack = []
-            elif territory.parent and typ != 'COUNTRY':
-                world = True
-
-            if world:
-                continue
-
-            if stack:
-                while stack[-1][0] >= level:
-                    stack.pop(-1)
-
-            if typ != 'COUNTRY':
-                stack.append((level, territory))
-            else:
-                for l, t in stack:
-                    t.children.add(territory)
+        process_reader(reader)
 
 
 import_territories()
