@@ -235,6 +235,19 @@ def import_world_tree():
 
             stack.append((level, territory))
 
+
+def add_child_to_stack(stack, territory):
+    for l, t in stack:
+        t.children.add(territory)
+
+
+def reduce_stack_to_level(stack, level):
+    if stack:
+        while stack[-1][0] >= level:
+            stack.pop(-1)
+    return stack
+
+
 def process_reader(reader):
     now = datetime.now()
     stack = []
@@ -262,15 +275,12 @@ def process_reader(reader):
         if world:
             continue
 
-        if stack:
-            while stack[-1][0] >= level:
-                stack.pop(-1)
+        stack = reduce_stack_to_level(stack, level)
 
         if typ != 'COUNTRY':
             stack.append((level, territory))
         else:
-            for l, t in stack:
-                t.children.add(territory)
+            add_child_to_stack(stack, territory)
 
 
 def import_other_structure():
