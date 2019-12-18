@@ -5,7 +5,7 @@
 ![GitHub](https://img.shields.io/github/license/musicmetadata/territories)
 ![PyPI](https://img.shields.io/pypi/v/music-metadata-territories)
 
-A very simple library for dealing with territory hierarchies used in music 
+A simple library for dealing with territory hierarchies used in music 
 metadata, currently primarily focused on CISAC TIS.
 
 It loads the territories and hierarchies from CSV files, made from Excel
@@ -23,7 +23,8 @@ Croatia results in a minimal list of included territories, and not all the
 countries:
 
 ```python
-from music_metadata.territories import *
+from music_metadata.territories.territory import Territory
+from music_metadata.territories.territory_list import TerritoryList
 
 world = Territory.get('2136')
 usa = Territory.get('US')
@@ -48,4 +49,36 @@ Result:
 2130 OCEANIA
 2132 SOUTH AMERICA
 2134 WEST INDIES
+```
+
+It is simple to list the countries:
+```python
+for t in sorted(l.countries, key=lambda x: x.name):
+    print(f'{t.tis_a:0>4}', t.name)
+```
+
+Result:
+
+```
+AF AFGHANISTAN
+AL ALBANIA
+DZ ALGERIA
+AD ANDORRA
+AO ANGOLA
+AG ANTIGUA AND BARBUDA
+AR ARGENTINA
+AM ARMENIA
+AU AUSTRALIA
+AT AUSTRIA
+...
+```
+
+One can check if a country is finally included in the list:
+
+```python
+usa in l
+```
+
+```Result:
+False
 ```

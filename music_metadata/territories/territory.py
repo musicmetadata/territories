@@ -58,9 +58,10 @@ class Territory(object):
         self.parent = None
         self.children = set()
 
-        self.__class__.all_tis_n[self.tis_n] = self
-        self.__class__.all_tis_a[self.tis_a] = self
-        self.__class__.all_tis_a[self.tis_a_ext] = self
+        self.all_tis_n[self.tis_n] = self
+        self.all_tis_a[self.tis_a] = self
+        if self.tis_a_ext:
+            self.all_tis_a[self.tis_a_ext] = self
 
     def __str__(self):
         return self.name
@@ -237,7 +238,7 @@ def import_world_tree():
 
 
 def add_child_to_stack(stack, territory):
-    for l, t in stack:
+    for __, t in stack:
         t.children.add(territory)
 
 
