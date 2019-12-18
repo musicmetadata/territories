@@ -8,19 +8,17 @@
 A simple library for dealing with territory hierarchies used in music 
 metadata, currently primarily focused on CISAC TIS.
 
-It loads the territories and hierarchies from CSV files, made from Excel
-files downloaded from CISAC documents.
+Conversion between TIS and DDEX territories will follow in the next release.
 
-One of the most importaint features is that it turns any combination of
-includes and excludes into a include-only list.
+## Code
 
 It has only two classes:
 
 * `Territory` - the territory, e.g. World, Europe, Croatia
 * `TerritoryList` - this class makes including and excluding territories 
-simpler, it also splits territories down when needed, e.g. World excluding 
-Croatia results in a minimal list of included territories, and not all the
-countries:
+simpler, it also splits territories down when needed
+
+World excluding USA results in a minimal list of included territories:
 
 ```python
 from music_metadata.territories.territory import Territory
@@ -51,7 +49,8 @@ Result:
 2134 WEST INDIES
 ```
 
-It is simple to list the countries:
+It is simple to list all the countries as well:
+
 ```python
 for t in sorted(l.countries, key=lambda x: x.name):
     print(f'{t.tis_a:0>4}', t.name)
@@ -82,3 +81,7 @@ usa in l
 ```Result:
 False
 ```
+
+You may test it online, no coding skills required: https://music-metadata.herokuapp.com/territories/
+
+The code for it is here: https://github.com/musicmetadata/web-wrapper
