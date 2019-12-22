@@ -8,7 +8,7 @@
 A simple library for dealing with territory hierarchies used in music 
 metadata, currently primarily focused on CISAC TIS.
 
-Conversion between TIS and DDEX territories will follow in the next release.
+Conversion between TIS and ISO (DDEX!) territories will follow in the next release.
 
 ## Code
 
@@ -84,4 +84,4 @@ False
 
 You may test it online, no coding skills required: https://music-metadata.herokuapp.com/territories/
 
-The code for it is here: https://github.com/musicmetadata/web-wrapper
+The code for the demo is here: https://github.com/musicmetadata/web-wrapper
