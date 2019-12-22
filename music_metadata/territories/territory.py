@@ -11,14 +11,12 @@ This should make things a bit simpler.
 
 """
 
-from datetime import datetime
+import collections
 import csv
 import os
-import collections
-
+from datetime import datetime
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-
 
 TERRITORY_LIST_FILE = 'list.csv'
 TERRITORY_TREE_FILE = 'tree.csv'
@@ -34,8 +32,7 @@ class Territory(object):
     all_tis_n = collections.OrderedDict()
     all_tis_a = collections.OrderedDict()
 
-    def __init__(
-            self, tis_n, tis_a, tis_a_ext, name, official_name,
+    def __init__(self, tis_n, tis_a, tis_a_ext, name, official_name,
             abbreviated_name, typ):
         """
 
@@ -160,18 +157,14 @@ def import_territories():
     """
 
     now = datetime.now()
-    with open(
-            os.path.join(
-                os.path.dirname(os.path.realpath(__file__)),
-                TERRITORY_LIST_FILE
-            )) as list_file:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+            TERRITORY_LIST_FILE)) as list_file:
         reader = csv.reader(list_file)
         next(reader)
         for row in reader:
-
             (tis_n, exists_from, exists_until, typ, __, tis_a, tis_a_ext,
-             name_from, name_until, name, official_name, abbreviated_name,
-             __) = row
+            name_from, name_until, name, official_name, abbreviated_name,
+            __) = row
 
             frm = datetime.strptime(exists_from, '%d.%m.%Y')
             until = datetime.strptime(exists_until, '%d.%m.%Y')
@@ -180,9 +173,8 @@ def import_territories():
             if not (frm <= now <= until and frm2 <= now <= until2):
                 continue
 
-            Territory(
-                tis_n, tis_a, tis_a_ext, name, official_name, abbreviated_name,
-                typ)
+            Territory(tis_n, tis_a, tis_a_ext, name, official_name,
+                abbreviated_name, typ)
 
 
 def import_world_tree():
@@ -197,10 +189,9 @@ def import_world_tree():
     stack = []
     world = False
     with open(
-            os.path.join(
-                os.path.dirname(os.path.realpath(__file__)),
-                TERRITORY_TREE_FILE
-            )) as list_file:
+        os.path.join(os.path.dirname(os.path.realpath(__file__)),
+        TERRITORY_TREE_FILE)
+    ) as list_file:
         reader = csv.reader(list_file)
         next(reader)
         for row in reader:
@@ -230,7 +221,7 @@ def import_world_tree():
                     stack.pop(-1)
 
                 parent = stack[-1][1]
-                assert(territory.parent is None)
+                assert (territory.parent is None)
                 territory.parent = parent
                 parent.children.add(territory)
 
@@ -288,14 +279,14 @@ def import_other_structure():
     """
     Import the territory structure.
 
-    This is the second part of the import, where everything in the world-tree is ignored.
+    This is the second part of the import, where everything in the world-tree
+    is ignored.
     """
 
     with open(
-            os.path.join(
-                os.path.dirname(os.path.realpath(__file__)),
-                TERRITORY_TREE_FILE
-            )) as list_file:
+        os.path.join(os.path.dirname(os.path.realpath(__file__)),
+        TERRITORY_TREE_FILE)
+    ) as list_file:
         reader = csv.reader(list_file)
         next(reader)
         process_reader(reader)

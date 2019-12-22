@@ -1,10 +1,12 @@
 import unittest
+
 from music_metadata.territories.territory import Territory
 from music_metadata.territories.territory_list import TerritoryList
 
 
 class TestTerritory(unittest.TestCase):
 
+    # noinspection PyTypeChecker
     def test_relations(self):
         """
         Test basic relations between hand-picked objects.
@@ -16,7 +18,8 @@ class TestTerritory(unittest.TestCase):
         world = Territory.get('2136')
         self.assertEqual(str(world), 'WORLD')
         self.assertEqual(
-            repr(world), 'Territory: WORLD (GEOGRAPHICAL COUNTRY-GROUP)')
+            repr(world),
+            'Territory: WORLD (GEOGRAPHICAL COUNTRY-GROUP)')
         self.assertEqual(len(world.children), 5)
         self.assertIsNone(world.parent)
 

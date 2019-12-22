@@ -27,12 +27,14 @@ class TerritoryList(collections.OrderedDict):
             return
 
         if territory in self:
-            raise ValueError(f'Territory {territory} is already directly included.')
+            raise ValueError(
+                f'Territory {territory} is already directly included.')
 
         for t in self:
             if territory in t.descendants:
                 raise ValueError(
-                    f'Territory {territory} is already included through {t}.')
+                    f'Territory {territory} is already included through '
+                    f'{t}.')
         self[territory] = obj
 
     def exclude(self, territory):
