@@ -17,8 +17,11 @@ class TerritoryList(collections.OrderedDict):
         Args:
             territory (Territory): territory object to be included
             obj (any): Any object, used in code that uses this functionality
-
         """
+
+        if territory in self:
+            raise ValueError(
+                f'Territory {territory} is already directly included.')
 
         if territory.children and not territory.in_world_tree:
             # This is some group not in the world tree:
@@ -26,26 +29,26 @@ class TerritoryList(collections.OrderedDict):
                 self.include(t, obj)
             return
 
-        if territory in self:
-            raise ValueError(
-                f'Territory {territory} is already directly included.')
-
         for t in self:
             if territory in t.descendants:
                 raise ValueError(
                     f'Territory {territory} is already included through '
                     f'{t}.')
+
+        for t in self:
+            if territory in t.ascendants:
+                raise ValueError(
+                    f'Territory {territory} already contains '
+                    f'{t}.')
+
         self[territory] = obj
 
     def exclude(self, territory):
         """
         Smartly exclude the territory from the list
 
-        Please note that it contains no data
-
         Args:
-            territory (Territory): territory object to be inc
-
+            territory (Territory): territory object to be excluded
         """
 
         # Let's try the trivial version
@@ -79,6 +82,40 @@ class TerritoryList(collections.OrderedDict):
             for t in parent.children:
                 if t not in stack and t != territory:
                     self.include(t, obj)
+
+    def add(self, territory, obj=None):
+        """
+        Include a territory with it's data to the list or add data to existing.
+
+        Args:
+            territory (Territory): territory object to be included
+            obj (any): Any object, used in code that uses this functionality
+        """
+
+        print('TOP', territory)
+
+        if territory in self:
+            self[territory] += obj
+            return
+
+        if not territory.in_world_tree:
+            for t in territory.children:
+                self.add(t, obj)
+            return
+
+        keys = list(self.keys())
+        for t in keys:
+            if territory in t.descendants:
+                new_obj = self[t] + obj
+                self.exclude(territory)
+                self.include(territory, new_obj)
+
+        try:
+            self.include(territory, obj)
+        except ValueError:
+            for t in territory.children:
+                print(territory, t, obj)
+                self.add(t, obj)
 
     @property
     def countries(self):
