@@ -150,6 +150,19 @@ class Territory(object):
     def ascendants(self):
         yield from self.get_ascendants()
 
+    def to_dict(self, verbosity=1):
+        d = collections.OrderedDict()
+        if verbosity >= 1:
+            d['name'] = self.name
+        d['tis-n'] = self.tis_n
+        d['tis-a'] = self.tis_a
+        if verbosity >= 1:
+            d['type'] = self.type
+            if self.children and verbosity >= 2:
+                d['included_tis-a_country_codes'] = sorted([
+                    t.tis_a for t in self.countries])
+        return d
+
 
 def import_territories():
     """

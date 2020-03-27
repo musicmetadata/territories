@@ -92,10 +92,8 @@ class TerritoryList(collections.OrderedDict):
             obj (any): Any object, used in code that uses this functionality
         """
 
-        print('TOP', territory)
-
         if territory in self:
-            self[territory] += obj
+            self[territory] = self[territory] + obj
             return
 
         if not territory.in_world_tree:
@@ -114,7 +112,6 @@ class TerritoryList(collections.OrderedDict):
             self.include(territory, obj)
         except ValueError:
             for t in territory.children:
-                print(territory, t, obj)
                 self.add(t, obj)
 
     @property
@@ -127,3 +124,4 @@ class TerritoryList(collections.OrderedDict):
                 for country in territory.countries:
                     countries[country] = obj
         return countries
+
