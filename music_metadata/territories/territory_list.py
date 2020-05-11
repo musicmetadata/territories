@@ -92,15 +92,19 @@ class TerritoryList(collections.OrderedDict):
             obj (any): Any object, used in code that uses this functionality
         """
 
+        # Territory already present as is, just add
         if territory in self:
             self[territory] = self[territory] + obj
             return
 
+        # Territory is not in world tree, e.g. Balkans, add all children
         if not territory.in_world_tree:
             for t in territory.children:
                 self.add(t, obj)
             return
 
+        # If none of the above, splitting is necessary, so first split
+        # the appropriate children territories
         keys = list(self.keys())
         for t in keys:
             if territory in t.descendants:
@@ -108,6 +112,7 @@ class TerritoryList(collections.OrderedDict):
                 self.exclude(territory)
                 self.include(territory, new_obj)
 
+        # Then try including the new territory, and add if already in there
         try:
             self.include(territory, obj)
         except ValueError:

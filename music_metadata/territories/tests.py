@@ -22,17 +22,32 @@ class TestTerritory(unittest.TestCase):
             'Territory: WORLD (GEOGRAPHICAL COUNTRY-GROUP)')
         self.assertEqual(len(world.children), 5)
         self.assertIsNone(world.parent)
+        d = world.to_dict(1)
+        self.assertEqual(d['name'], 'WORLD')
+        self.assertEqual(d['tis-n'], '2136')
+        self.assertEqual(d['tis-a'], '2WL')
+        self.assertIsNot('included_tis-a_country_codes', d)
 
         europe = Territory.get('2120')
         self.assertEqual(europe.parent, world)
         self.assertIn(europe, world.descendants)
         self.assertNotIn(europe, world.countries)
+        d = europe.to_dict(2)
+        self.assertEqual(d['name'], 'EUROPE')
+        self.assertEqual(d['tis-n'], '2120')
+        self.assertEqual(d['tis-a'], '2EU')
+        codes = d['included_tis-a_country_codes']
+        self.assertIn('HR', codes)
 
         croatia = Territory.get('HR')
         self.assertNotIn(croatia, europe.children)
         self.assertIn(croatia, europe.descendants)
         self.assertIn(croatia, europe.countries)
         self.assertIn(croatia, world.countries)
+        d = croatia.to_dict(1)
+        self.assertEqual(d['name'], 'CROATIA')
+        self.assertEqual(d['tis-n'], '191')
+        self.assertEqual(d['tis-a'], 'HR')
 
         cat = Territory.get('2115')
         self.assertNotIn(croatia, cat.descendants)
@@ -81,6 +96,11 @@ class TestTerritoryList(unittest.TestCase):
             territory_list.include(croatia)
 
         territory_list = TerritoryList()
+        territory_list.include(slovenia)
+        with self.assertRaises(ValueError):
+            territory_list.include(world)
+
+        territory_list = TerritoryList()
         territory_list.include(world)
         with self.assertRaises(ValueError):
             territory_list.include(europe)
@@ -110,3 +130,16 @@ class TestTerritoryList(unittest.TestCase):
         territory_list.exclude(cat)
         self.assertGreater(len(territory_list.countries), 100)
         self.assertIn(slovenia, territory_list.countries)
+
+        territory_list = TerritoryList()
+        territory_list.add(world, 10)
+        territory_list.add(croatia, 10)
+        self.assertIn(slovenia, territory_list)
+        self.assertEqual(territory_list[croatia], 20)
+        territory_list.add(croatia, 10)
+        self.assertEqual(territory_list[croatia], 30)
+        territory_list.add(balkans, 10)
+        self.assertEqual(territory_list[croatia], 40)
+        territory_list.add(europe, 10)
+        self.assertEqual(territory_list[croatia], 50)
+
