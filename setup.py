@@ -11,7 +11,11 @@ setuptools.setup(
     description="Music Metedata - Territory-related tools",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/musicmetadata/territories",
+    url="https://matijakolaric.com/development/musicmetadata/",
+    project_urls={
+        'Created by': 'https://matijakolaric.com',
+        'Code Repository': 'https://github.com/musicmetadata/territories',
+    },
     packages=setuptools.find_namespace_packages(include=['music_metadata.*']),
     namespace_packages=['music_metadata'],
     package_data={
