@@ -68,53 +68,84 @@ class TestTerritoryList(unittest.TestCase):
 
         world = Territory.get('2136')
         balkans = Territory.get('2108')
-        croatia = Territory.get('HR')
         germany = Territory.get('DE')
+        croatia = Territory.get('HR')
         slovenia = Territory.get('705')
         europe = Territory.get('2120')
         cat = Territory.get('2115')
+        usa = Territory.get('0840')
+        asia = Territory.get('2AS')
 
+        # World excluding Croatia includes Slovenia
         territory_list = TerritoryList()
         territory_list.include(world)
-        territory_list.exclude(croatia)
+        territory_list.exclude('hr')
+        self.assertIn(slovenia, territory_list)
         self.assertIn(slovenia, territory_list.countries)
         self.assertIn(slovenia, territory_list.keys())
 
+        # Balkans includes Slovenia
         territory_list = TerritoryList()
         territory_list.include(balkans)
+        self.assertIn(slovenia, territory_list)
         self.assertIn(slovenia, territory_list.countries)
         self.assertIn(slovenia, territory_list.keys())
 
+        # World excluding Balkans does not include Slovenia
         territory_list = TerritoryList()
         territory_list.include(world)
         territory_list.exclude(balkans)
+        self.assertNotIn(slovenia, territory_list)
         self.assertNotIn(slovenia, territory_list.countries)
         self.assertNotIn(slovenia, territory_list.keys())
 
+        # World including Croatia raises errors
+        # (Croatia is part of the World)
         territory_list = TerritoryList()
         territory_list.include(world)
         with self.assertRaises(ValueError):
-            territory_list.include(croatia)
+            territory_list.include('192')
 
+        # Slovenia including World raises an error
         territory_list = TerritoryList()
         territory_list.include(slovenia)
         with self.assertRaises(ValueError):
             territory_list.include(world)
 
+        # World including Europe raises an error
         territory_list = TerritoryList()
         territory_list.include(world)
         with self.assertRaises(ValueError):
             territory_list.include(europe)
 
+        # World including Commonwealth of African territories raises an error
         territory_list = TerritoryList()
         territory_list.include(world)
         with self.assertRaises(ValueError):
             territory_list.include(cat)
 
+        # World excluding Europe including Balkans includes Slovenia
+        territory_list = TerritoryList()
+        territory_list.include(world)
+        territory_list.exclude(europe)
+        territory_list.include(balkans)
+        self.assertIn(slovenia, territory_list)
+        self.assertIn(slovenia, territory_list.countries)
+        self.assertIn(slovenia, territory_list.keys())
+
+        # World excluding US includes Slovenia, but not in keys
+        territory_list = TerritoryList()
+        territory_list.include('2136')
+        territory_list.exclude('840')
+        self.assertIn(slovenia, territory_list)
+        self.assertIn(slovenia, territory_list.countries)
+        self.assertNotIn(slovenia, territory_list.keys())
+
+        # Simple share manipulations
         territory_list = TerritoryList()
         territory_list.include(world, '50%')
         territory_list.exclude(europe)
-        territory_list.include(croatia, '25%')
+        territory_list.include('hr', '25%')
         self.assertIn('25%', territory_list.values())
         self.assertIn((croatia, '25%'), territory_list.items())
         self.assertEqual(len(territory_list), 5)
@@ -126,6 +157,7 @@ class TestTerritoryList(unittest.TestCase):
         with self.assertRaises(ValueError):
             territory_list.exclude(slovenia)
 
+        # Slovenia is not in Africa
         territory_list = TerritoryList()
         territory_list.include(world)
         territory_list.exclude(cat)
@@ -149,3 +181,46 @@ class TestTerritoryList(unittest.TestCase):
         territory_list.exclude(balkans)
         self.assertIn(germany, territory_list.countries)
         self.assertNotIn(slovenia, territory_list.countries)
+
+        territory_list = TerritoryList()
+        with self.assertRaises(ValueError):
+            territory_list.include(0)
+
+        # Test compressing without objects
+        t = TerritoryList()
+        t.compress()
+
+        t.include('2136')
+        t.exclude('hr')
+        t.include('hr')
+        t.exclude('2NA')
+        t.include('2NA')
+        t.exclude('US')
+        t.include('US')
+        t.compress()
+        
+        t2 = TerritoryList()
+        t2.include('2136')
+        self.assertEqual(t, t2)
+
+        # Test compressing with objects
+        t = TerritoryList()
+        t.compress()
+
+        t.include('2136', 50)
+        t.exclude('hr')
+        t.include('hr', 50)
+        t.exclude('2NA')
+        t.include('2NA', 25)
+        t.exclude('US')
+        t.include('US', 100)
+        t.compress()
+
+        self.assertIn(asia, t.keys())
+        self.assertEqual(t.get(asia), 50)
+
+        self.assertIn(europe, t.keys())
+        self.assertEqual(t.get(europe), 50)
+
+        self.assertIn(usa, t.keys())
+        self.assertEqual(t.get(usa), 100)

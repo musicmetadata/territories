@@ -6,9 +6,29 @@ The functionality coded here makes the inclusions/exclusions simpler.
 """
 
 import collections
+from .territory import Territory
+from collections import OrderedDict, defaultdict
 
 
 class TerritoryList(collections.OrderedDict):
+    """Ordered dictionary with Territory objects as keys and any object,
+    including None, as value."""
+
+    @staticmethod
+    def _clean_territory(territory):
+        if isinstance(territory, Territory):
+            return territory
+        if isinstance(territory, str):
+            return Territory.get(territory)
+        raise ValueError('Territory must be a Territory or a str.')
+
+    def __contains__(self, territory):
+        territory = self._clean_territory(territory)
+        if super().__contains__(territory):
+            return True
+        if any([territory in t.descendants for t in self.keys()]):
+            return True
+        return False
 
     def include(self, territory, obj=None):
         """
@@ -19,7 +39,9 @@ class TerritoryList(collections.OrderedDict):
             obj (any): Any object, used in code that uses this functionality
         """
 
-        if territory in self:
+        territory = self._clean_territory(territory)
+
+        if territory in self.keys():
             raise ValueError(
                 f'Territory {territory} is already directly included.')
 
@@ -51,8 +73,10 @@ class TerritoryList(collections.OrderedDict):
             territory (Territory): territory object to be excluded
         """
 
+        territory = self._clean_territory(territory)
+
         # Let's try the trivial version
-        if territory in self:
+        if territory in self.keys():
             del self[territory]
             return
 
@@ -66,7 +90,7 @@ class TerritoryList(collections.OrderedDict):
         stack = []
         for t in territory.ascendants:
             stack.append(t)
-            if t in self:
+            if t in self.keys():
                 break
         else:
             raise ValueError(
@@ -92,8 +116,10 @@ class TerritoryList(collections.OrderedDict):
             obj (any): Any object, used in code that uses this functionality
         """
 
+        territory = self._clean_territory(territory)
+
         # Territory already present as is, just add
-        if territory in self:
+        if territory in self.keys():
             self[territory] = self[territory] + obj
             return
 
@@ -121,7 +147,7 @@ class TerritoryList(collections.OrderedDict):
 
     @property
     def countries(self):
-        countries = collections.OrderedDict()
+        countries = TerritoryList()
         for territory, obj in self.items():
             if territory.is_country:
                 countries[territory] = obj
@@ -130,3 +156,23 @@ class TerritoryList(collections.OrderedDict):
                     countries[country] = obj
         return countries
 
+    def compress(self):
+        if len(self) <= 1:
+            return
+        ascendants = defaultdict(int)
+        for country, obj in self.countries.items():
+            for t in country.ascendants:
+                ascendants[(t, obj)] += 1
+        ascendants = OrderedDict(
+            sorted(ascendants.items(), key=lambda x: x[1], reverse=True))
+        solved = set()
+        for (territory, obj), count in ascendants.items():
+            if territory in solved:
+                continue
+            if len(list(territory.countries)) == count:
+                for country in territory.countries:
+                    self.exclude(country)
+                self.include(territory, obj)
+                for subterritory in territory.descendants:
+                    if (subterritory, obj) in ascendants.keys():
+                        solved.add(subterritory)

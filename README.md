@@ -74,8 +74,6 @@ AT AUSTRIA
 ...
 ```
 
-One can check if a country is finally included in the list:
-
 ```python
 usa in l
 ```
@@ -83,6 +81,20 @@ usa in l
 ```Result:
 False
 ```
+
+The shorter version also works, yielding same results: 
+```python
+from music_metadata.territories.territory_list import TerritoryList
+
+l = TerritoryList()
+l.include('2136')  # WORLD
+l.exclude('US')  # USA
+
+for t in sorted(l, key=lambda x: x.name):
+    print(f'{t.tis_n:0>4}', t.name)
+```
+
+One can check if a country is finally included in the list:
 
 ### Share manipulation
 
@@ -126,6 +138,57 @@ class Shares(list):
         return Shares([self[i] + other[i] for i in range(len(self))])   
 ```
 
+## Compressing output
+
+Long lists can be trimmed, both if they have values and if they do not.
+Only territories with the same object will be compressed. Consider this:
+
+```python
+from music_metadata.territories.territory_list import TerritoryList
+
+l = TerritoryList()
+l.include('2136', 25)
+l.exclude('HR')
+l.add('US', 25)  # US is now at 50
+l.include('HR', 25)  # same as it used to be
+
+for t, v in l.items():
+    print(f'{t.name}: {v}')
+```
+
+```Result:
+ASIA: 25
+OCEANIA: 25
+AFRICA: 25
+MALTA: 25
+ICELAND: 25
+... 30 territories cut out ...
+MEXICO: 25
+UNITED STATES: 50
+CROATIA: 25
+```
+
+But, if we compress:
+
+```python
+l.compress()
+
+for t, v in l.items():
+    print(f'{t.name}: {v}')
+```
+
+```Result:
+CANADA: 25
+MEXICO: 25
+UNITED STATES: 50
+AFRICA: 25
+ASIA: 25
+EUROPE: 25
+OCEANIA: 25
+WEST INDIES: 25
+SOUTH AMERICA: 25
+CENTRAL AMERICA: 25
+```
 ## Testing and demo wrapper
 
 You may test it online, no coding skills required: https://music-metadata.herokuapp.com/territories/
