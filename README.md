@@ -72,16 +72,8 @@ AM ARMENIA
 AU AUSTRALIA
 AT AUSTRIA
 ...
-```
 
-```python
-usa in l
 ```
-
-```Result:
-False
-```
-
 The shorter version also works, yielding same results: 
 ```python
 from music_metadata.territories.territory_list import TerritoryList
@@ -95,6 +87,24 @@ for t in sorted(l, key=lambda x: x.name):
 ```
 
 One can check if a country is finally included in the list:
+
+```python
+usa in l
+```
+
+```Result:
+False
+```
+
+Works also with territories deeper in the structure, also with codes:
+
+```python
+'hr' in l
+```
+
+```Result:
+True
+```
 
 ### Share manipulation
 
