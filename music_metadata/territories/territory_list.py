@@ -137,6 +137,7 @@ class TerritoryList(collections.OrderedDict):
                 new_obj = self[t] + obj
                 self.exclude(territory)
                 self.include(territory, new_obj)
+                return
 
         # Then try including the new territory, and add if already in there
         try:

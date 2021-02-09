@@ -224,3 +224,13 @@ class TestTerritoryList(unittest.TestCase):
 
         self.assertIn(usa, t.keys())
         self.assertEqual(t.get(usa), 100)
+
+        # Test with complex territories and compressing
+        bt = Territory.get('2111')
+        uk = Territory.get('826')
+        t = TerritoryList()
+        t.add('2136', 50)
+        t.add(bt, 25)
+        t.compress()
+        self.assertEqual(t.get(bt), 75)
+        self.assertEqual(t.get(uk), None)
