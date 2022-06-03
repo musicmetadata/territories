@@ -8,8 +8,6 @@
 A simple library for dealing with territory hierarchies used in music 
 metadata, currently primarily focused on CISAC TIS.
 
-Conversion between TIS and ISO (DDEX!) territories will follow in the next release.
-
 ## Classes
 
 It has only two classes:
@@ -199,8 +197,9 @@ WEST INDIES: 25
 SOUTH AMERICA: 25
 CENTRAL AMERICA: 25
 ```
-## Testing and demo wrapper
+## Demo
+Available as utility in free online [CWR.tools](<https://cwr.tools>).
 
-You may test it online, no coding skills required: https://music-metadata.herokuapp.com/territories/
-
-The code for the demo is here: https://github.com/musicmetadata/web-wrapper
+Similar utility is part of 
+[Web Wrapper for Music Metadata Python Libraries](https://github.com/musicmetadata/web-wrapper),
+but you need to deploy it yourself. Deployment to Heroku is fully automated.
