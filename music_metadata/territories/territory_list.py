@@ -32,7 +32,7 @@ class TerritoryList(collections.OrderedDict):
 
     def include(self, territory, obj=None):
         """
-        Include a territory with it's data to the list.
+        Include a territory with its data to the list.
 
         Args:
             territory (Territory): territory object to be included
@@ -109,7 +109,7 @@ class TerritoryList(collections.OrderedDict):
 
     def add(self, territory, obj=None):
         """
-        Include a territory with it's data to the list or add data to existing.
+        Include a territory with its data to the list or add data to existing.
 
         Args:
             territory (Territory): territory object to be included
@@ -174,6 +174,6 @@ class TerritoryList(collections.OrderedDict):
                 for country in territory.countries:
                     self.exclude(country)
                 self.include(territory, obj)
-                for subterritory in territory.descendants:
-                    if (subterritory, obj) in ascendants.keys():
-                        solved.add(subterritory)
+                for sub_territory in territory.descendants:
+                    if (sub_territory, obj) in ascendants.keys():
+                        solved.add(sub_territory)
