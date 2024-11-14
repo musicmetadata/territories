@@ -185,8 +185,10 @@ def import_territories():
             until = datetime.strptime(exists_until, '%d.%m.%Y')
             frm2 = datetime.strptime(name_from, '%d.%m.%Y')
             until2 = datetime.strptime(name_until, '%d.%m.%Y')
-            if not (frm <= now <= until and frm2 <= now <= until2):
-                continue
+
+            # DISABLED TO ALLOW TERMINATED TERRITORIES
+            # if not (frm <= now <= until and frm2 <= now <= until2):
+            #     continue
 
             Territory(tis_n, tis_a, tis_a_ext, name, official_name,
                       abbreviated_name, typ)
