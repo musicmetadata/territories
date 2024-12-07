@@ -19,7 +19,7 @@ class TestTerritory(unittest.TestCase):
         self.assertEqual(str(world), 'WORLD')
         self.assertEqual(
             repr(world),
-            'Territory: WORLD (GEOGRAPHICAL COUNTRY-GROUP)')
+            'Territory: WORLD (GLG)')
         self.assertEqual(len(world.children), 5)
         self.assertIsNone(world.parent)
         d = world.to_dict(1)

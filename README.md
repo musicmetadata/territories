@@ -197,9 +197,3 @@ WEST INDIES: 25
 SOUTH AMERICA: 25
 CENTRAL AMERICA: 25
 ```
-## Demo
-Available as utility in free online [CWR.tools](<https://cwr.tools>).
-
-Similar utility is part of 
-[Web Wrapper for Music Metadata Python Libraries](https://github.com/musicmetadata/web-wrapper),
-but you need to deploy it yourself. Deployment to Heroku is fully automated.
