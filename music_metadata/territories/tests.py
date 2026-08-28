@@ -59,6 +59,36 @@ class TestTerritory(unittest.TestCase):
             self.assertIn(c, world.countries)
 
 
+    def test_historical(self):
+        """
+        Historical territories are available for lookups, but stay out of
+        the world tree and never shadow current territories.
+        """
+
+        old_sudan = Territory.get('736')
+        self.assertEqual(str(old_sudan), 'SUDAN')
+        self.assertFalse(old_sudan.is_current)
+        self.assertFalse(old_sudan.in_world_tree)
+
+        sudan = Territory.get('SD')
+        self.assertEqual(sudan.tis_n, '729')
+        self.assertTrue(sudan.is_current)
+        self.assertEqual(Territory.get('SDN'), sudan)
+
+        world = Territory.get('2136')
+        self.assertNotIn(old_sudan, world.countries)
+        self.assertIn(sudan, world.countries)
+
+        yugoslavia = Territory.get('890')
+        self.assertEqual(str(yugoslavia), 'YUGOSLAVIA')
+        self.assertEqual(Territory.get('YU'), yugoslavia)
+        self.assertFalse(yugoslavia.is_current)
+
+        self.assertEqual(Territory.get('DE').tis_n, '276')
+        self.assertEqual(Territory.get('ET').tis_n, '231')
+        self.assertEqual(Territory.get('YE').tis_n, '887')
+
+
 class TestTerritoryList(unittest.TestCase):
 
     def test_world(self):
