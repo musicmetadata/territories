@@ -107,20 +107,57 @@ class TerritoryList(collections.OrderedDict):
                 if t not in stack and t != territory:
                     self.include(t, obj)
 
-    def add(self, territory, obj=None):
+    def _add_values(self, held, obj, territory):
         """
-        Include a territory with its data to the list or add data to existing.
+        Combine the value this list holds with the one being added.
+
+        A list either carries values or carries None - it either holds data
+        or it does not. The two have nothing to combine, so mixing them is
+        refused by name rather than becoming a TypeError from here.
+
+        Args:
+            held (any): the value already in the list
+            obj (any): the value being added
+            territory (Territory): for the error message
+
+        Returns:
+            any: the combined value
+
+        """
+        if held is None or obj is None:
+            raise ValueError(
+                f'Territory {territory} has no value in this list, so '
+                f'{obj!r} cannot be added to it. A list carries values or it '
+                f'carries None, not both: build the list with add() and a '
+                f'value throughout, or with include() and no values at all.'
+            )
+        return held + obj
+
+    def add(self, territory, obj):
+        """
+        Add a territory with its data, accumulating onto what is there.
+
+        obj is required. add() exists to add a value to a value, and with
+        obj defaulting to None a bare add(x) said nothing about which of the
+        two it was: on a fresh list it quietly stored None, and on a
+        territory already in the list it was None + None - a TypeError
+        raised from inside this module for a condition include() already
+        describes. Required, the call is refused at the call site instead,
+        where the caller can see it. Use include(x) to add a territory with
+        no value.
 
         Args:
             territory (Territory): territory object to be included
-            obj (any): Any object, used in code that uses this functionality
+            obj (any): the value to add, not None
+
         """
 
         territory = self._clean_territory(territory)
 
         # Territory already present as is, just add
         if territory in self.keys():
-            self[territory] = self[territory] + obj
+            self[territory] = self._add_values(
+                self[territory], obj, territory)
             return
 
         # Territory is not in world tree, e.g. Balkans, add all children
@@ -134,7 +171,7 @@ class TerritoryList(collections.OrderedDict):
         keys = list(self.keys())
         for t in keys:
             if territory in t.descendants:
-                new_obj = self[t] + obj
+                new_obj = self._add_values(self[t], obj, t)
                 self.exclude(territory)
                 self.include(territory, new_obj)
                 return
