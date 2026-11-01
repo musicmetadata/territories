@@ -111,9 +111,12 @@ class TerritoryList(collections.OrderedDict):
         """
         Combine the value this list holds with the one being added.
 
-        A list either carries values or carries None - it either holds data
-        or it does not. The two have nothing to combine, so mixing them is
-        refused by name rather than becoming a TypeError from here.
+        add() is arithmetic, so the two values have to add to each other and
+        that addition is what decides. There is no separate rule about None:
+        None adds to nothing, so a None anywhere in the pair fails here the
+        same way a list of fields meeting a bare int would. Catching the
+        TypeError keeps the failure a ValueError naming the territory, rather
+        than an unsupported operand pair from the middle of this module.
 
         Args:
             held (any): the value already in the list
@@ -124,14 +127,17 @@ class TerritoryList(collections.OrderedDict):
             any: the combined value
 
         """
-        if held is None or obj is None:
+        try:
+            return held + obj
+        except TypeError as e:
             raise ValueError(
-                f'Territory {territory} has no value in this list, so '
-                f'{obj!r} cannot be added to it. A list carries values or it '
-                f'carries None, not both: build the list with add() and a '
-                f'value throughout, or with include() and no values at all.'
-            )
-        return held + obj
+                f'add() was given {obj!r} as its second argument, which can '
+                f'not be added to the {held!r} this list holds for territory '
+                f'{territory}. The values in a list have to add to each '
+                f'other: a list built with add() carries values, and they '
+                f'accumulate, while a list built with include() carries '
+                f'None, and None adds to nothing.'
+            ) from e
 
     def add(self, territory, obj):
         """
@@ -148,7 +154,7 @@ class TerritoryList(collections.OrderedDict):
 
         Args:
             territory (Territory): territory object to be included
-            obj (any): the value to add, not None
+            obj (any): the value to add; it must add to what the list holds
 
         """
 
