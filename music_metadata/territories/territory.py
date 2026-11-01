@@ -33,7 +33,7 @@ class Territory(object):
     all_tis_a = collections.OrderedDict()
 
     def __init__(self, tis_n, tis_a, tis_a_ext, name, official_name,
-                 abbreviated_name, typ):
+                 abbreviated_name, typ, is_current=True):
         """
 
         Args:
@@ -44,6 +44,8 @@ class Territory(object):
             official_name (str): A bit longer name
             abbreviated_name (str): A shorter name
             typ (str): e.g. COUNTRY, GEOGRAPHICAL COUNTRY-GROUP
+            is_current (bool): False for territories that no longer exist,
+                e.g. Sudan before the 2011 split, Yugoslavia, USSR
         """
         self.tis_n = tis_n
         self.tis_a = tis_a
@@ -52,13 +54,22 @@ class Territory(object):
         self.official_name = official_name
         self.abbreviated_name = abbreviated_name
         self.type = typ
+        self.is_current = is_current
         self.parent = None
         self.children = set()
 
-        self.all_tis_n[self.tis_n] = self
-        self.all_tis_a[self.tis_a] = self
-        if self.tis_a_ext:
-            self.all_tis_a[self.tis_a_ext] = self
+        if is_current:
+            self.all_tis_n[self.tis_n] = self
+            self.all_tis_a[self.tis_a] = self
+            if self.tis_a_ext:
+                self.all_tis_a[self.tis_a_ext] = self
+        else:
+            # historical codes must not shadow current ones,
+            # e.g. SD is both pre-split (736) and current (729) Sudan
+            self.all_tis_n.setdefault(self.tis_n, self)
+            self.all_tis_a.setdefault(self.tis_a, self)
+            if self.tis_a_ext:
+                self.all_tis_a.setdefault(self.tis_a_ext, self)
 
     def __str__(self):
         return self.name
@@ -185,6 +196,12 @@ def import_territories():
             until = datetime.strptime(exists_until, '%d.%m.%Y')
             frm2 = datetime.strptime(name_from, '%d.%m.%Y')
             until2 = datetime.strptime(name_until, '%d.%m.%Y')
+            if now > until:
+                # e.g. Sudan before the 2011 split, Yugoslavia, USSR;
+                # kept for lookups, as old files still reference them
+                Territory(tis_n, tis_a, tis_a_ext, name, official_name,
+                          abbreviated_name, typ, is_current=False)
+                continue
             if not (frm <= now <= until and frm2 <= now <= until2):
                 continue
 
